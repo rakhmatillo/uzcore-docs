@@ -1,0 +1,842 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uzcore.csec.uz/schemas/1.0/incident-report.schema.json",
+  "title": "UzCORE Incident Batch",
+  "description": "Tasdiqlangan xavfsizlik hodisalari to'plami. Manba: tashkilotning SOAR / case-management tizimi. Konvert tashkilot identifikatsiyasini bir marta olib yuradi; hodisalar incidents[] massivida. Element ichida org_id/sender_id BO'LMAYDI. tlp element darajasida - hodisalar mustaqil va sezgirligi har xil.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "telemetry_type",
+    "schema_version",
+    "org_id",
+    "incidents"
+  ],
+  "properties": {
+    "telemetry_type": {
+      "const": "incident_batch"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "org_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "description": "Hodisalar yuz bergan tashkilot (ma'lumot egasi). Yuboruvchi bu yerda EMAS - u x-org-id header'i va HMAC imzosi orqali aniqlanadi. Bitta so'rovda bitta tashkilot."
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "IXTIYORIY diagnostika maydoni: to'plam integratsiya tomonidan shakllantirilgan vaqt. collected_at - updated_at = yetkazib berish kechikishi. To'ldirilmasa server qabul qilgan vaqt ishlatiladi (aniqligi pastroq: tarmoq va navbat kechikishini ham o'z ichiga oladi)."
+    },
+    "incidents": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "report_id",
+          "source_case_id",
+          "tlp",
+          "lifecycle",
+          "classification",
+          "technical"
+        ],
+        "properties": {
+          "report_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "description": "UUID v5, qo'llanma 1.5 formulasi bo'yicha: uuidv5(17e9f2a9-2473-5a70-b622-f121ae871cb0, org_id + '|' + source_case_id). Tasodifiy generatsiya QILINMAYDI."
+          },
+          "source_case_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Tashkilotning o'z case raqami. report_id shundan hisoblanadi, shuning uchun majburiy va hodisa hayoti davomida o'zgarmas."
+          },
+          "source_system": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "Case tizimi nomi: TheHive, XSOAR, Sentinel, Splunk SOAR, QRadar SOAR, Updive."
+          },
+          "related_report_ids": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            },
+            "description": "Analitik bog'liq deb hisoblagan BOSHQA hodisalarning report_id lari (dublikat, bir kampaniyaning bosqichlari va h.k.). Yangilanish yuborish uchun kerak EMAS. O'z report_id sini o'z ichiga OLMAYDI - backend buni tekshiradi."
+          },
+          "tlp": {
+            "type": "string",
+            "enum": [
+              "CLEAR",
+              "GREEN",
+              "AMBER",
+              "AMBER+STRICT",
+              "RED"
+            ],
+            "description": "Shu hodisaning maxfiylik darajasi. Konvertda emas, har bir hodisada - hodisalar bir-biridan mustaqil va sezgirligi har xil bo'ladi."
+          },
+          "alerts": {
+            "type": "array",
+            "maxItems": 500,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "description": "Bog'liq alertlarning finding_info.uid qiymatlari. Joylashuvi: incidents[] elementining o'zida, lifecycle/technical bilan bir darajada. CVE bog'lanishi shu orqali amalga oshadi."
+          },
+          "lifecycle": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status_id",
+              "detected_at",
+              "opened_at",
+              "updated_at"
+            ],
+            "properties": {
+              "status_id": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "description": "OCSF Incident Finding holati: 1 New, 2 In Progress, 3 On Hold, 4 Resolved, 5 Closed. 0 (Unknown) va 99 (Other) ATAYLAB yo'q - case har doim shu beshtadan birida bo'ladi. Manba tizimdan mapping: Ilova B.10."
+              },
+              "detected_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "Tashkilot vositasi faoliyatni BIRINCHI aniqlagan vaqt (case ochilgan vaqt emas). Barcha time_to_* hisoblarining boshlang'ich nuqtasi."
+              },
+              "opened_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "SOAR da case ochilgan vaqt. opened_at - detected_at = triaj kechikishi."
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "Aynan shu hisobot versiyasi shakllangan vaqt."
+              },
+              "closed_at": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "status_id = 5 (Closed) bo'lganda majburiy."
+              },
+              "time_to_acknowledge_sec": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "MTTA: detected_at dan birinchi analitik harakatigacha, sekundda. SOAR ma'lumoti asosida."
+              },
+              "time_to_contain_sec": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "MTTC: detected_at dan lokalizatsiyagacha, sekundda. SOAR ma'lumoti asosida."
+              },
+              "time_to_resolve_sec": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "MTTR: detected_at dan to'liq hal qilishgacha, sekundda. SOAR ma'lumoti asosida."
+              },
+              "verdict_id": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                "description": "Tergovdan keyingi xulosa: 0 Unknown, 1 False Positive, 2 True Positive, 3 Disregard, 4 Suspicious, 5 Benign, 6 Test, 7 Insufficient Data, 8 Security Risk, 9 Managed Externally, 10 Duplicate. 99 (Other) ATAYLAB yo'q. Mapping: Ilova B.11."
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status_id": {
+                      "const": 5
+                    }
+                  },
+                  "required": [
+                    "status_id"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "closed_at"
+                  ],
+                  "properties": {
+                    "closed_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "classification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "event_category",
+              "title",
+              "severity_id"
+            ],
+            "properties": {
+              "event_category": {
+                "type": "string",
+                "enum": [
+                  "abusive_content",
+                  "malicious_code",
+                  "information_gathering",
+                  "intrusion_attempts",
+                  "intrusions",
+                  "availability",
+                  "information_content_security",
+                  "fraud",
+                  "vulnerable",
+                  "other"
+                ],
+                "description": "ENISA RSIT 1.3 birinchi daraja."
+              },
+              "event_type": {
+                "type": "string",
+                "enum": [
+                  "application_compromise",
+                  "brute_force",
+                  "burglary",
+                  "c2_server",
+                  "copyright",
+                  "data_leak",
+                  "data_loss",
+                  "ddos",
+                  "ddos_amplifier",
+                  "dos",
+                  "exploit",
+                  "harmful_speech",
+                  "ids_alert",
+                  "infected_system",
+                  "information_disclosure",
+                  "malware_configuration",
+                  "malware_distribution",
+                  "masquerade",
+                  "misconfiguration",
+                  "other",
+                  "outage",
+                  "phishing",
+                  "potentially_unwanted_accessible",
+                  "privileged_account_compromise",
+                  "sabotage",
+                  "scanner",
+                  "sniffing",
+                  "social_engineering",
+                  "spam",
+                  "system_compromise",
+                  "unauthorised_information_access",
+                  "unauthorised_information_modification",
+                  "unauthorised_use_of_resources",
+                  "undetermined",
+                  "unprivileged_account_compromise",
+                  "violence",
+                  "vulnerable_system",
+                  "weak_crypto"
+                ],
+                "description": "ENISA RSIT 1.3 ikkinchi daraja. Tanlangan event_category ga mos bo'lishi SHART. Ixtiyoriy: hech bir SOAR da RSIT yo'q, noto'g'ri qiymatdan ko'ra bo'sh qoldirish yaxshiroq."
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 2000,
+                "description": "Tozalangan xulosa. Xom log, IP, login, buyruq qatori YOZILMAYDI."
+              },
+              "severity_id": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  99
+                ],
+                "description": "OCSF: 0 Unknown, 1 Informational, 2 Low, 3 Medium, 4 High, 5 Critical, 99 Other. Alert telemetriyasi bilan bir xil shkala."
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "abusive_content"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "spam",
+                        "harmful_speech",
+                        "violence"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "malicious_code"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "infected_system",
+                        "c2_server",
+                        "malware_distribution",
+                        "malware_configuration"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "information_gathering"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "scanner",
+                        "sniffing",
+                        "social_engineering"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "intrusion_attempts"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "exploit",
+                        "brute_force",
+                        "ids_alert"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "intrusions"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "privileged_account_compromise",
+                        "unprivileged_account_compromise",
+                        "application_compromise",
+                        "system_compromise",
+                        "burglary"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "availability"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "dos",
+                        "ddos",
+                        "misconfiguration",
+                        "sabotage",
+                        "outage"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "information_content_security"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "unauthorised_information_access",
+                        "unauthorised_information_modification",
+                        "data_leak",
+                        "data_loss"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "fraud"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "unauthorised_use_of_resources",
+                        "copyright",
+                        "masquerade",
+                        "phishing"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "vulnerable"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "weak_crypto",
+                        "ddos_amplifier",
+                        "potentially_unwanted_accessible",
+                        "information_disclosure",
+                        "vulnerable_system"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "event_category": {
+                      "const": "other"
+                    }
+                  },
+                  "required": [
+                    "event_category"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "event_type": {
+                      "enum": [
+                        "other",
+                        "undetermined"
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "technical": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "indicators"
+            ],
+            "properties": {
+              "mitre_attacks": {
+                "type": "array",
+                "maxItems": 20,
+                "uniqueItems": true,
+                "description": "MITRE ATT&CK, uch darajali: taktika -> texnikalar -> subtexnikalar. Taktika MAJBURIY (u texnikadan kelib chiqmaydi: bitta texnika bir nechta taktikaga tegishli bo'lishi mumkin). Har bir taktika bir marta uchraydi.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "tactic",
+                    "techniques"
+                  ],
+                  "properties": {
+                    "tactic": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "uid"
+                      ],
+                      "properties": {
+                        "uid": {
+                          "type": "string",
+                          "pattern": "^TA\\d{4}$"
+                        },
+                        "name": {
+                          "type": "string",
+                          "maxLength": 200
+                        },
+                        "src_url": {
+                          "type": "string",
+                          "maxLength": 2048
+                        }
+                      }
+                    },
+                    "techniques": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 50,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "uid"
+                        ],
+                        "properties": {
+                          "uid": {
+                            "type": "string",
+                            "pattern": "^T\\d{4}$",
+                            "description": "Texnika ID si. Subtexnika bu yerga YOZILMAYDI - u sub_techniques[] ga tushadi."
+                          },
+                          "name": {
+                            "type": "string",
+                            "maxLength": 200
+                          },
+                          "src_url": {
+                            "type": "string",
+                            "maxLength": 2048
+                          },
+                          "sub_techniques": {
+                            "type": "array",
+                            "minItems": 1,
+                            "maxItems": 50,
+                            "uniqueItems": true,
+                            "description": "Subtexnika ota-texnikasiz yuborilmaydi: manba faqat T1110.001 bersa, konnektor T1110 ni ID dan chiqarib ota-texnika sifatida yozadi.",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "uid"
+                              ],
+                              "properties": {
+                                "uid": {
+                                  "type": "string",
+                                  "pattern": "^T\\d{4}\\.\\d{3}$"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "maxLength": 200
+                                },
+                                "src_url": {
+                                  "type": "string",
+                                  "maxLength": 2048
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "affected_asset_uids": {
+                "type": "array",
+                "maxItems": 1000,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "description": "Ta'sirlangan aktivlarning asset_uid qiymatlari. Aktivlar ma'lum bo'lganda to'ldiriladi. Hech qanday ichki aktiv ishtirok etmagan yoki ko'lam hali aniqlanmagan bo'lsa, [] yuboriladi va keyingi lifecycle yangilanishida to'ldiriladi. asset_inventory.assets[].asset_uid ga bog'lanadi. SOAR ning ichki aktiv ID si emas, aktivning hostname'i yoziladi. Normallashtirish: bo'sh joysiz, kichik harfda, FQDN bo'lsa birinchi nuqtagacha (WEB01.corp.local -> web01); IP manzil yozilmaydi (qo'llanma §2.4.7)."
+              },
+              "indicators": {
+                "type": "array",
+                "maxItems": 200,
+                "description": "IOC lar. Bo'sh massiv faqat manba tizimda observable bo'lmagan holatda. Normallashtirish majburiy (2.3): refang, kichik harf, RFC 1918 filtrlanadi.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type",
+                    "value"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "ipv4",
+                        "ipv6",
+                        "domain",
+                        "url",
+                        "md5",
+                        "sha1",
+                        "sha256",
+                        "email",
+                        "file_name",
+                        "user_agent",
+                        "registry_key"
+                      ]
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "response": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "actions_taken": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                "description": "Case ichida bajarilgan harakatlar, erkin matn. Xost nomi, IP, login, xodim ismi YOZILMAYDI."
+              },
+              "containment_status": {
+                "type": "string",
+                "enum": [
+                  "not_contained",
+                  "partially_contained",
+                  "contained",
+                  "eradicated",
+                  "recovered"
+                ],
+                "description": "NIST SP 800-61 javob bosqichi. status_id (ish jarayoni) dan farq qiladi."
+              },
+              "closing_note": {
+                "type": "string",
+                "maxLength": 2000,
+                "description": "Case yopilishidagi erkin izoh. Yopish SABABI bu yerda emas - u verdict_id da. Maxfiy ma'lumot YOZILMAYDI."
+              }
+            }
+          },
+          "activity": {
+            "type": "array",
+            "description": "Case xronologiyasi, TO'LIQ tarix. Har yangilanishda butunlay qayta yuboriladi. Izoh MATNI yuborilmaydi - faqat 'izoh yozildi' fakti va vaqti. Cheklov yo'q.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "time",
+                "type"
+              ],
+              "properties": {
+                "time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "case_opened",
+                    "case_closed",
+                    "case_reopened",
+                    "status_changed",
+                    "comment_added",
+                    "task_created",
+                    "task_completed",
+                    "severity_changed",
+                    "artifact_added",
+                    "other"
+                  ]
+                },
+                "to_status_id": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  "description": "type = status_changed bo'lganda majburiy."
+                },
+                "to_severity_id": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    99
+                  ],
+                  "description": "type = severity_changed bo'lganda majburiy."
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "status_changed"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "to_status_id"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "severity_changed"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "to_severity_id"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
