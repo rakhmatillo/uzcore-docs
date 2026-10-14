@@ -1,0 +1,227 @@
+{
+  "site.title": {
+    "uz": "UzCORE telemetriya hujjati",
+    "en": "UzCORE Telemetry Docs",
+    "ru": "Документация телеметрии UzCORE"
+  },
+  "nav.guide": {
+    "uz": "Qo'llanma",
+    "en": "Guide",
+    "ru": "Руководство"
+  },
+  "nav.schemas": {
+    "uz": "Sxemalar (maydon ma'lumotnomasi)",
+    "en": "Schemas (field reference)",
+    "ru": "Схемы (справочник полей)"
+  },
+  "nav.history": {
+    "uz": "Tarix",
+    "en": "History",
+    "ru": "История"
+  },
+  "nav.changelog": {
+    "uz": "O'zgarishlar jurnali",
+    "en": "Changelog",
+    "ru": "Журнал изменений"
+  },
+  "nav.versions": {
+    "uz": "Versiyalar",
+    "en": "Versions",
+    "ru": "Версии"
+  },
+  "schemas.intro": {
+    "uz": "Quyidagi jadvallar to'g'ridan-to'g'ri rasmiy JSON Schema fayllaridan generatsiya qilinadi — ular bilan hech qachon farq qilmaydi. R = majburiy, R* = massiv elementi ichida majburiy, C = shartli (qoidalar bo'limiga qarang), O = ixtiyoriy.",
+    "en": "These tables are generated directly from the official JSON Schema files and can never drift from them. R = required, R* = required inside each array element, C = conditional (see the rules section), O = optional.",
+    "ru": "Таблицы генерируются напрямую из официальных файлов JSON Schema и никогда не расходятся с ними. R = обязательное, R* = обязательное внутри каждого элемента массива, C = условное (см. раздел правил), O = необязательное."
+  },
+  "legend": {
+    "uz": "Maydon nomiga bosib unga havola olish mumkin. Versiya belgisi maydon qaysi relizda qo'shilganini ko'rsatadi.",
+    "en": "Click a field name for a permalink. The version badge shows the release in which the field was added.",
+    "ru": "Нажмите на имя поля, чтобы получить ссылку. Метка версии показывает релиз, в котором поле появилось."
+  },
+  "col.field": {
+    "uz": "Maydon",
+    "en": "Field",
+    "ru": "Поле"
+  },
+  "col.type": {
+    "uz": "Tur / cheklov",
+    "en": "Type / constraints",
+    "ru": "Тип / ограничения"
+  },
+  "col.req": {
+    "uz": "R/O",
+    "en": "R/O",
+    "ru": "R/O"
+  },
+  "col.desc": {
+    "uz": "Ta'rif va ruxsat etilgan qiymatlar",
+    "en": "Definition and allowed values",
+    "ru": "Описание и допустимые значения"
+  },
+  "col.version": {
+    "uz": "Versiya",
+    "en": "Version",
+    "ru": "Версия"
+  },
+  "col.date": {
+    "uz": "Sana",
+    "en": "Date",
+    "ru": "Дата"
+  },
+  "col.note": {
+    "uz": "Izoh",
+    "en": "Note",
+    "ru": "Примечание"
+  },
+  "enum.values": {
+    "uz": "ta qiymat — ko'rsatish",
+    "en": "values — show",
+    "ru": "значений — показать"
+  },
+  "since": {
+    "uz": "Qo'shilgan versiya",
+    "en": "Added in version",
+    "ru": "Добавлено в версии"
+  },
+  "fallback": {
+    "uz": "Tarjima yo'q — o'zbekcha ko'rsatilmoqda",
+    "en": "Not translated yet — showing Uzbek",
+    "ru": "Перевода пока нет — показан узбекский"
+  },
+  "guide.fallback": {
+    "uz": "Qo'llanma bu tilga hali tarjima qilinmagan. Asl nusxa ko'rsatilmoqda",
+    "en": "The guide has not been translated into this language yet. Showing the original",
+    "ru": "Руководство ещё не переведено на этот язык. Показан оригинал"
+  },
+  "schema.file": {
+    "uz": "Fayl",
+    "en": "File",
+    "ru": "Файл"
+  },
+  "schema.fields": {
+    "uz": "Maydonlar soni",
+    "en": "Field count",
+    "ru": "Количество полей"
+  },
+  "schema.fieldtable": {
+    "uz": "Maydonlar",
+    "en": "Fields",
+    "ru": "Поля"
+  },
+  "schema.rules": {
+    "uz": "Shartli qoidalar (if / then)",
+    "en": "Conditional rules (if / then)",
+    "ru": "Условные правила (if / then)"
+  },
+  "schema.rules.hint": {
+    "uz": "Sxemadagi allOf/if/then bloklaridan avtomatik chiqarilgan. Validator aynan shularni tekshiradi.",
+    "en": "Extracted automatically from the schema's allOf/if/then blocks. This is exactly what the validator enforces.",
+    "ru": "Извлечены автоматически из блоков allOf/if/then схемы. Именно это проверяет валидатор."
+  },
+  "download": {
+    "uz": "yuklab olish",
+    "en": "download",
+    "ru": "скачать"
+  },
+  "open": {
+    "uz": "ochish",
+    "en": "open",
+    "ru": "открыть"
+  },
+  "schemas.dir": {
+    "uz": "sxema fayllari",
+    "en": "schema files",
+    "ru": "файлы схем"
+  },
+  "current": {
+    "uz": "joriy",
+    "en": "current",
+    "ru": "текущая"
+  },
+  "draft": {
+    "uz": "QORALAMA — reliz qilinmagan o'zgarishlar",
+    "en": "DRAFT — unreleased changes",
+    "ru": "ЧЕРНОВИК — невыпущенные изменения"
+  },
+  "draft.hint": {
+    "uz": "Bu sahifa oxirgi relizdan keyin o'zgartirilgan ishchi nusxadan qurilgan. Nima o'zgargani o'zgarishlar jurnalining birinchi yozuvida. Reliz uchun: python build.py release X.Y.Z \"izoh\"",
+    "en": "This page is built from the working copy, which differs from the last release. The first changelog entry lists exactly what changed. To release: python build.py release X.Y.Z \"note\"",
+    "ru": "Страница собрана из рабочей копии, отличающейся от последнего релиза. Первая запись журнала показывает, что именно изменилось. Для релиза: python build.py release X.Y.Z \"примечание\""
+  },
+  "changelog.hint": {
+    "uz": "Har bir yozuv ikki reliz orasidagi sxema fayllarini maydonma-maydon solishtirish natijasi — qo'lda yozilmaydi, o'tkazib yuborilmaydi.",
+    "en": "Each entry is a field-by-field comparison of the schema files between two releases — computed, not hand-written, nothing gets missed.",
+    "ru": "Каждая запись — результат сравнения файлов схем между двумя релизами по каждому полю: вычисляется автоматически, ничего не пропускается."
+  },
+  "changelog.initial": {
+    "uz": "Birinchi reliz.",
+    "en": "Initial release.",
+    "ru": "Первый релиз."
+  },
+  "changelog.nochange": {
+    "uz": "Sxema va qo'llanmada o'zgarish yo'q.",
+    "en": "No schema or guide changes.",
+    "ru": "Без изменений в схемах и руководстве."
+  },
+  "chg.added": {
+    "uz": "qo'shildi",
+    "en": "added",
+    "ru": "добавлено"
+  },
+  "chg.removed": {
+    "uz": "olib tashlandi",
+    "en": "removed",
+    "ru": "удалено"
+  },
+  "chg.updated": {
+    "uz": "matni yangilandi",
+    "en": "text updated",
+    "ru": "текст обновлён"
+  },
+  "chg.guide": {
+    "uz": "Qo'llanma bo'limlari",
+    "en": "Guide sections",
+    "ru": "Разделы руководства"
+  },
+  "chg.newschema": {
+    "uz": "Yangi sxema",
+    "en": "New schema",
+    "ru": "Новая схема"
+  },
+  "chg.removedschema": {
+    "uz": "Sxema olib tashlandi",
+    "en": "Schema removed",
+    "ru": "Схема удалена"
+  },
+  "versions.none": {
+    "uz": "Hali reliz yo'q.",
+    "en": "No releases yet.",
+    "ru": "Релизов пока нет."
+  },
+  "search.placeholder": {
+    "uz": "Maydon qidirish…  ( / )",
+    "en": "Search fields…  ( / )",
+    "ru": "Поиск полей…  ( / )"
+  },
+  "search.hits": {
+    "uz": "ta maydon",
+    "en": "fields",
+    "ru": "полей"
+  },
+  "search.none": {
+    "uz": "Mos maydon topilmadi.",
+    "en": "No matching fields.",
+    "ru": "Полей не найдено."
+  },
+  "chg.newguide": {
+    "uz": "Qo'llanmaning shu tildagi tarjimasi qo'shildi",
+    "en": "Guide translation added in this language",
+    "ru": "Добавлен перевод руководства на этот язык"
+  },
+  "chg.removedguide": {
+    "uz": "Qo'llanmaning shu tildagi nusxasi olib tashlandi",
+    "en": "Guide in this language removed",
+    "ru": "Руководство на этом языке удалено"
+  }
+}

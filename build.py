@@ -301,8 +301,12 @@ def diff_sources(old, new):
         if d["added"] or d["removed"] or d["changed"] or d.get("new_schema") or d.get("removed_schema"):
             out["schemas"][sid] = d
     for lang in LANGS:
-        if lang in new["guides"] or lang in old["guides"]:
-            d = diff_guides(old["guides"].get(lang), new["guides"].get(lang))
+        if lang in new["guides"] and lang not in old["guides"]:
+            out["guide"][lang] = {"added": [], "removed": [], "changed": [], "new_guide": True}
+        elif lang in old["guides"] and lang not in new["guides"]:
+            out["guide"][lang] = {"added": [], "removed": [], "changed": [], "removed_guide": True}
+        elif lang in new["guides"]:
+            d = diff_guides(old["guides"][lang], new["guides"][lang])
             if d["added"] or d["removed"] or d["changed"]:
                 out["guide"][lang] = d
     return out
@@ -682,6 +686,10 @@ def render_changelog(entries, T: ML):
                 out.append("</ul>")
             for glang, gd in d["guide"].items():
                 out.append(f'<h4>{T("chg.guide")} ({glang.upper()})</h4><ul>')
+                if gd.get("new_guide"):
+                    out.append(f'<li class="chg-add">{T("chg.newguide")}</li>')
+                if gd.get("removed_guide"):
+                    out.append(f'<li class="chg-rm">{T("chg.removedguide")}</li>')
                 for h in gd["added"]:
                     out.append(f'<li><span class="chg-add">+</span> {inline_md(h)}</li>')
                 for h in gd["removed"]:
@@ -719,8 +727,8 @@ def build_page(src, ui, version, date, is_draft, changelog_entries, since, relea
     nav.append(f'<h4>{T("nav.guide")}</h4>')
     for g, langs in guide_groups.items():
         nav.append(f'<div data-lang="{" ".join(langs)}">')
-        for level, title, sid in guide_toc[g]:
-            if level == 1 and sid.endswith(("-ma-lumotlarni-yuborish-bo-yicha-texnik-qo-llanma",)):
+        for idx, (level, title, sid) in enumerate(guide_toc[g]):
+            if idx == 0 and level == 1:  # document title, not a section
                 continue
             nav.append(f'<a class="l{level}" href="#{sid}">{inline_md(title)}</a>')
         nav.append("</div>")
