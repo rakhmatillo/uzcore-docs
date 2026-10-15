@@ -1,0 +1,338 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uzcore.csec.uz/schemas/1.0/alert.schema.json",
+  "title": "UzCORE Alert Batch (OCSF 1.9.0 Detection Finding)",
+  "description": "So'rov tanasi — alertlar MASSIVI. Konvert (envelope) tashkilot identifikatsiyasini bir marta olib yuradi; alertlar alerts[] massivida. Element ichida org_id yoki collected_at BO'LMAYDI — ular konvertda. additionalProperties:false — sxemada yo'q maydonlar rad etiladi.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "telemetry_type",
+    "schema_version",
+    "org_id",
+    "collected_at",
+    "alerts"
+  ],
+  "properties": {
+    "telemetry_type": {
+      "const": "alert_batch"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "org_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "description": "Alertlar tegishli tashkilot (ma'lumot egasi). Yuboruvchi bu yerda EMAS. Bitta so'rovda bitta tashkilot."
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "To'plam integratsiya tomonidan yig'ilgan vaqt (ISO 8601 UTC). Alert ichidagi 'time' dan farqli — u epoch ms."
+    },
+    "alerts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "class_uid",
+          "category_uid",
+          "activity_id",
+          "type_uid",
+          "time",
+          "severity_id",
+          "metadata",
+          "finding_info",
+          "device"
+        ],
+        "properties": {
+          "class_uid": {
+            "const": 2004
+          },
+          "category_uid": {
+            "const": 2
+          },
+          "activity_id": {
+            "const": 1,
+            "description": "Har doim 1 (Create). Alert o'zgarmas; hayotiy sikl incident telemetriyasida."
+          },
+          "type_uid": {
+            "const": 200401
+          },
+          "time": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "epoch MILLISEKUND (OCSF timestamp_t)."
+          },
+          "start_time": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "epoch MILLISEKUND (OCSF timestamp_t)."
+          },
+          "end_time": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Kuzatilgan faoliyat tugagan vaqt (epoch ms). start_time bilan juftlik: end_time bo'lsa start_time majburiy va start_time <= end_time bo'lishi shart."
+          },
+          "severity_id": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              99
+            ],
+            "description": "0 Unknown, 1 Informational, 2 Low, 3 Medium, 4 High, 5 Critical, 99 Other. 0 manba xavflilik bermaganda halol ishlatiladi."
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "product"
+            ],
+            "description": "tenant_uid ATAYLAB yo'q — attribusiya org_id orqali.",
+            "properties": {
+              "version": {
+                "const": "1.9.0"
+              },
+              "product": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "version": {
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                }
+              },
+              "event_code": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "logged_time": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "epoch MILLISEKUND (OCSF timestamp_t)."
+              }
+            }
+          },
+          "finding_info": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "uid",
+              "title"
+            ],
+            "properties": {
+              "uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Manba vositaning o'z ID si. Barqaror. Idempotentlik kaliti va incident.technical.alerts[] bilan bog'lanish nuqtasi."
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 300,
+                "description": "Qoidaning nomi. Hodisa matni yoki qiymatlar YOZILMAYDI."
+              },
+              "attacks": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "anyOf": [
+                    {
+                      "required": [
+                        "technique"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sub_technique"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "tactic"
+                      ]
+                    }
+                  ],
+                  "properties": {
+                    "technique": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "uid": {
+                          "type": "string",
+                          "maxLength": 40
+                        }
+                      }
+                    },
+                    "sub_technique": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "uid": {
+                          "type": "string",
+                          "maxLength": 40
+                        }
+                      }
+                    },
+                    "tactic": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "uid": {
+                          "type": "string",
+                          "maxLength": 40
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "device": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "hostname"
+            ],
+            "description": "hostname — asset_inventory.assets[].asset_uid ga bog'lovchi kalit (qisqa, kichik harfli nom).",
+            "properties": {
+              "hostname": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 253
+              },
+              "ip": {
+                "type": "string",
+                "maxLength": 45
+              },
+              "mac": {
+                "type": "string",
+                "pattern": "^([0-9a-f]{2}:){5}[0-9a-f]{2}$",
+                "description": "MAC manzil, kichik harfda. Aktivdagi technical.mac_addresses[] bilan solishtiriladi."
+              }
+            }
+          },
+          "observables": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type_id",
+                "value"
+              ],
+              "properties": {
+                "type_id": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    10,
+                    11,
+                    18,
+                    99
+                  ],
+                  "description": "0 Unknown, 1 Hostname, 2 IP, 3 MAC, 4 User Name, 5 Email, 6 URL, 7 File Name, 8 Hash, 10 Resource UID, 11 Port, 18 CVE uid, 99 Other. 13/15/19 maxfiylik sabab yuborilmaydi."
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 2048
+                }
+              }
+            }
+          },
+          "vulnerabilities": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cve": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "uid"
+                  ],
+                  "properties": {
+                    "uid": {
+                      "type": "string",
+                      "pattern": "^CVE-\\d{4}-\\d{4,}$"
+                    }
+                  }
+                },
+                "severity": {
+                  "type": "string",
+                  "maxLength": 40
+                }
+              }
+            }
+          },
+          "status_id": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              99
+            ],
+            "description": "Alert triaj holati: 0 Unknown, 1 New, 2 In Progress, 3 Suppressed, 4 Resolved, 5 Archived, 99 Other. Incident status_id dan FARQ QILADI."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "end_time"
+              ]
+            },
+            "then": {
+              "required": [
+                "start_time"
+              ]
+            },
+            "description": "end_time bo'lsa start_time majburiy"
+          }
+        ]
+      }
+    }
+  }
+}
