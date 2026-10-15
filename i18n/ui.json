@@ -223,5 +223,20 @@
     "uz": "Qo'llanmaning shu tildagi nusxasi olib tashlandi",
     "en": "Guide in this language removed",
     "ru": "Руководство на этом языке удалено"
+  },
+  "ver.latest": {
+    "uz": "joriy",
+    "en": "latest",
+    "ru": "текущая"
+  },
+  "archived": {
+    "uz": "ESKI VERSIYA",
+    "en": "OLD VERSION",
+    "ru": "СТАРАЯ ВЕРСИЯ"
+  },
+  "archived.hint": {
+    "uz": "Siz hujjatning arxivdagi versiyasini ko'ryapsiz. Joriy versiya:",
+    "en": "You are viewing an archived version of the documentation. Current version:",
+    "ru": "Вы просматриваете архивную версию документации. Текущая версия:"
   }
 }

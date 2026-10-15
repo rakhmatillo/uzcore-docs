@@ -467,6 +467,8 @@ header .brand{font-weight:700;letter-spacing:.2px}
 header .ver{background:var(--badge);color:var(--accent);font-family:var(--mono);font-size:.8rem;padding:3px 8px;border-radius:999px}
 header .ver.draft{background:var(--draft);color:var(--draft-ink)}
 header .spacer{flex:1}
+header select{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:5px 8px;border-radius:6px;font:inherit;font-size:.85rem;font-family:var(--mono)}
+.draft-banner.archived{background:var(--badge);color:var(--ink);border-color:var(--line)}
 header input[type=search]{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 10px;border-radius:8px;min-width:220px}
 .lang button,.theme button{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:5px 9px;border-radius:6px;cursor:pointer;font:inherit;font-size:.85rem}
 .lang button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -548,6 +550,8 @@ JS = r"""
   try{initial=new URL(location).searchParams.get('lang')||localStorage.getItem('nsoc-lang')||DEFAULT;}catch(e){}
   setLang(initial);
   document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.set)));
+  const vsel=document.getElementById('vsel');
+  vsel&&vsel.addEventListener('change',()=>{const u=new URL(vsel.value,location.href);u.searchParams.set('lang',root.getAttribute('lang'));u.hash=location.hash;location.href=u;});
   // theme
   function setTheme(t){ if(t) root.setAttribute('data-theme',t); else root.removeAttribute('data-theme'); try{t?localStorage.setItem('nsoc-theme',t):localStorage.removeItem('nsoc-theme');}catch(e){} }
   try{ const t=localStorage.getItem('nsoc-theme'); if(t) setTheme(t);}catch(e){}
@@ -702,7 +706,7 @@ def render_changelog(entries, T: ML):
     return "".join(out)
 
 
-def build_page(src, ui, version, date, is_draft, changelog_entries, since, releases, out_path: Path, base_prefix: str):
+def build_page(src, ui, version, date, is_draft, changelog_entries, since, releases, out_path: Path, base_prefix: str, all_versions=None):
     """Render one complete page (all languages embedded; JS shows one)."""
     T = ML(ui)
     schemas = src["schemas"]
@@ -761,6 +765,17 @@ def build_page(src, ui, version, date, is_draft, changelog_entries, since, relea
         body.append(f'<tr><td colspan="4" class="meta">{T("versions.none")}</td></tr>')
     body.append("</tbody></table></section>")
 
+    all_versions = all_versions if all_versions is not None else [r["version"] for r in releases]
+    latest = all_versions[-1] if all_versions else version
+    is_archived = (not is_draft) and version != latest and bool(all_versions)
+    opts = [f'<option value="{base_prefix}index.html"{" selected" if not is_archived else ""}>{"v" + esc(latest) + " · " if all_versions else ""}{T.t(DEFAULT_LANG, "ver.latest")}</option>']
+    for v in reversed(all_versions):
+        sel = " selected" if (is_archived and v == version) else ""
+        opts.append(f'<option value="{base_prefix}versions/{esc(v)}/index.html"{sel}>v{esc(v)}</option>')
+    version_select = f'<select id="vsel" aria-label="version">{"".join(opts)}</select>'
+    if is_archived:
+        body.insert(0, f'<div class="draft-banner archived"><b>{T("archived")}</b> — {T("archived.hint")} <a href="{base_prefix}index.html">v{esc(latest)}</a></div>')
+
     title = T.t(DEFAULT_LANG, "site.title")
     lang_buttons = "".join(f'<button data-set="{l}">{l.upper()}</button>' for l in LANGS)
     page = f"""<!doctype html>
@@ -778,6 +793,7 @@ def build_page(src, ui, version, date, is_draft, changelog_entries, since, relea
   <button class="burger" aria-label="menu">☰</button>
   <span class="brand">{T("site.title")}</span>
   <span class="ver{' draft' if is_draft else ''}" title="{esc(date)}">{esc(ver_label)}</span>
+  {version_select}
   <span class="spacer"></span>
   <input id="q" type="search" aria-label="search" data-ph='{esc(json.dumps({l: T.t(l, "search.placeholder") for l in LANGS}, ensure_ascii=False))}'>
   <span id="qstatus" class="meta" data-labels='{esc(json.dumps({l: T.t(l, "search.hits") for l in LANGS}, ensure_ascii=False))}'></span>
@@ -852,7 +868,8 @@ def build(check_only=False):
     (DIST / ".nojekyll").write_text("")
 
     # latest page = working copy
-    size = build_page(working, ui, latest_ver, latest_date, is_draft, entries, since, releases, DIST / "index.html", "")
+    all_versions = [r["version"] for r in releases]
+    size = build_page(working, ui, latest_ver, latest_date, is_draft, entries, since, releases, DIST / "index.html", "", all_versions)
     # schema files for working copy under latest version label
     sd = DIST / "schemas" / latest_ver
     sd.mkdir(parents=True)
@@ -866,7 +883,7 @@ def build(check_only=False):
         sub_entries = [e for e in entries if not e["is_draft"] and version_key(e["version"]) <= version_key(ver)]
         sub_since = {k: v for k, v in compute_since(release_sources[: i + 1]).items() if v != first_ver}
         build_page(src, ui, ver, r["meta"]["date"], False, sub_entries, sub_since, releases[: i + 1],
-                   DIST / "versions" / ver / "index.html", "../../")
+                   DIST / "versions" / ver / "index.html", "../../", all_versions)
         vd = DIST / "schemas" / ver
         if not vd.exists():
             vd.mkdir(parents=True)
