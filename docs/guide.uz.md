@@ -1084,6 +1084,7 @@ Quyida `alerts[]` massivining bitta elementi to'liq ko'rsatilgan (konvert §3.2 
       "version": "4.7.2"
     },
     "event_code": "5715",
+    "event_name": "sshd: brute force trying to get access to the system",
     "logged_time": 1786594364900
   },
 
@@ -1215,6 +1216,7 @@ Bu to'rt maydon **har doim bir xil**. Boshqa qiymat yuborilsa payload rad etilad
 | `metadata.product.name` | string | **R** | Vosita nomi: `"Wazuh"`, `"CrowdStrike Falcon"`, `"Microsoft Defender"` |
 | `metadata.product.version` | string | **O** | Vosita versiyasi |
 | `metadata.event_code` | string | **O** | Ishga tushgan qoida/imzo ID si (Wazuh `rule.id`, Sigma rule id) |
+| `metadata.event_name` | string | **O** | `event_code` juftligi — ishga tushgan qoida/imzoning nomi (Wazuh `rule.description`, Suricata signature), ≤300 belgi. UzCORE kengaytmasi: OCSF `metadata` da bu atribut yo'q. |
 | `metadata.logged_time` | integer | **O** | Log tizimga tushgan vaqt (epoch ms) |
 
 
@@ -2421,7 +2423,7 @@ Amaliy yordam: keng tarqalgan vositalarda kerakli ma'lumot qayerda turadi.
 |---|---|---|
 | `id` | `finding_info.uid` | Idempotentlik kaliti |
 | `rule.id` | `metadata.event_code` | — |
-| `rule.description` | `finding_info.title` | — |
+| `rule.description` | `finding_info.title`, `metadata.event_name` | — |
 | `rule.level` (0–15) | `severity_id` | Quyidagi mapping jadvali bo'yicha (§3.4.3) |
 | `rule.mitre.id` | `finding_info.attacks[].technique.uid` | Incidentda `technical.mitre_attacks[].techniques[].uid` |
 | `rule.mitre.tactic` (nom) | `finding_info.attacks[].tactic.uid` | Nomdan ID ga o'girish kerak — Ilova B.9 |

@@ -43,6 +43,7 @@
   "alert#/properties/alerts/items/properties/end_time": "When the observed activity ended (epoch ms). Paired with start_time: if end_time is present, start_time is required and start_time <= end_time must hold.",
   "alert#/properties/alerts/items/properties/severity_id": "0 Unknown, 1 Informational, 2 Low, 3 Medium, 4 High, 5 Critical, 99 Other. 0 is used honestly when the source gives no severity.",
   "alert#/properties/alerts/items/properties/metadata": "tenant_uid is DELIBERATELY absent — attribution is via org_id.",
+  "alert#/properties/alerts/items/properties/metadata/properties/event_name": "Counterpart of event_code — the name of the rule/signature that fired (Wazuh rule.description, Suricata signature). UzCORE extension: OCSF metadata has no such attribute.",
   "alert#/properties/alerts/items/properties/metadata/properties/logged_time": "epoch MILLISECONDS (OCSF timestamp_t).",
   "alert#/properties/alerts/items/properties/finding_info/properties/uid": "The source tool's own ID. Stable. Idempotency key and the link point to incident.technical.alerts[].",
   "alert#/properties/alerts/items/properties/finding_info/properties/title": "Rule name. NO event text or values.",

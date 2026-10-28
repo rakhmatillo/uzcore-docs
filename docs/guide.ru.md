@@ -1084,6 +1084,7 @@ mitre_attacks[]
       "version": "4.7.2"
     },
     "event_code": "5715",
+    "event_name": "sshd: brute force trying to get access to the system",
     "logged_time": 1786594364900
   },
 
@@ -1215,6 +1216,7 @@ mitre_attacks[]
 | `metadata.product.name` | string | **R** | Название средства: `"Wazuh"`, `"CrowdStrike Falcon"`, `"Microsoft Defender"` |
 | `metadata.product.version` | string | **O** | Версия средства |
 | `metadata.event_code` | string | **O** | ID сработавшего правила/сигнатуры (Wazuh `rule.id`, Sigma rule id) |
+| `metadata.event_name` | string | **O** | Пара к `event_code` — название сработавшего правила/сигнатуры (Wazuh `rule.description`, Suricata signature), ≤300 символов. Расширение UzCORE: в OCSF `metadata` такого атрибута нет. |
 | `metadata.logged_time` | integer | **O** | Время поступления лога в систему (epoch ms) |
 
 
@@ -2421,7 +2423,7 @@ SOAR/SIEM-система каждой организации используе�
 |---|---|---|
 | `id` | `finding_info.uid` | Ключ идемпотентности |
 | `rule.id` | `metadata.event_code` | — |
-| `rule.description` | `finding_info.title` | — |
+| `rule.description` | `finding_info.title`, `metadata.event_name` | — |
 | `rule.level` (0–15) | `severity_id` | По таблице маппинга ниже (§3.4.3) |
 | `rule.mitre.id` | `finding_info.attacks[].technique.uid` | В incident — `technical.mitre_attacks[].techniques[].uid` |
 | `rule.mitre.tactic` (название) | `finding_info.attacks[].tactic.uid` | Требуется перевод из названия в ID — Приложение B.9 |

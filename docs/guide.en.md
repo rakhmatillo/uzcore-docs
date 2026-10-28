@@ -1084,6 +1084,7 @@ Below is one element of the `alerts[]` array shown in full (the envelope is in �
       "version": "4.7.2"
     },
     "event_code": "5715",
+    "event_name": "sshd: brute force trying to get access to the system",
     "logged_time": 1786594364900
   },
 
@@ -1215,6 +1216,7 @@ These four fields are **always the same**. If any other value is sent, the paylo
 | `metadata.product.name` | string | **R** | Tool name: `"Wazuh"`, `"CrowdStrike Falcon"`, `"Microsoft Defender"` |
 | `metadata.product.version` | string | **O** | Tool version |
 | `metadata.event_code` | string | **O** | ID of the rule/signature that fired (Wazuh `rule.id`, Sigma rule id) |
+| `metadata.event_name` | string | **O** | Counterpart of `event_code` — the name of the rule/signature that fired (Wazuh `rule.description`, Suricata signature), ≤300 chars. UzCORE extension: OCSF `metadata` has no such attribute. |
 | `metadata.logged_time` | integer | **O** | Time the log entered the system (epoch ms) |
 
 
@@ -2421,7 +2423,7 @@ Practical help: where the required data is located in widely used tools.
 |---|---|---|
 | `id` | `finding_info.uid` | Idempotency key |
 | `rule.id` | `metadata.event_code` | — |
-| `rule.description` | `finding_info.title` | — |
+| `rule.description` | `finding_info.title`, `metadata.event_name` | — |
 | `rule.level` (0–15) | `severity_id` | Per the mapping table below (§3.4.3) |
 | `rule.mitre.id` | `finding_info.attacks[].technique.uid` | In an incident: `technical.mitre_attacks[].techniques[].uid` |
 | `rule.mitre.tactic` (name) | `finding_info.attacks[].tactic.uid` | Must be converted from name to ID — Appendix B.9 |

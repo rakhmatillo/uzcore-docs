@@ -43,6 +43,7 @@
   "alert#/properties/alerts/items/properties/end_time": "Время окончания наблюдаемой активности (epoch ms). Парное к start_time: если есть end_time, start_time обязателен и должно выполняться start_time <= end_time.",
   "alert#/properties/alerts/items/properties/severity_id": "0 Unknown, 1 Informational, 2 Low, 3 Medium, 4 High, 5 Critical, 99 Other. 0 честно используется, когда источник не даёт уровень критичности.",
   "alert#/properties/alerts/items/properties/metadata": "tenant_uid НАМЕРЕННО отсутствует — атрибуция через org_id.",
+  "alert#/properties/alerts/items/properties/metadata/properties/event_name": "Пара к event_code — название сработавшего правила/сигнатуры (Wazuh rule.description, Suricata signature). Расширение UzCORE: в OCSF metadata такого атрибута нет.",
   "alert#/properties/alerts/items/properties/metadata/properties/logged_time": "epoch в МИЛЛИСЕКУНДАХ (OCSF timestamp_t).",
   "alert#/properties/alerts/items/properties/finding_info/properties/uid": "Собственный ID исходного средства. Стабильный. Ключ идемпотентности и точка связи с incident.technical.alerts[].",
   "alert#/properties/alerts/items/properties/finding_info/properties/title": "Название правила. Текст события или значения НЕ ПИШУТСЯ.",
