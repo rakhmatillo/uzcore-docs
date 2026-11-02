@@ -223,15 +223,13 @@
           "device": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "hostname"
-            ],
-            "description": "hostname — asset_inventory.assets[].asset_uid ga bog'lovchi kalit (qisqa, kichik harfli nom).",
+            "description": "hostname — asset_inventory.assets[].asset_uid ga bog'lovchi kalit (qisqa, kichik harfli nom). Ixtiyoriy, lekin kuchli tavsiya etiladi: hostname bo'lmasa alert aktivga bog'lanmaydi (zaxira yo'l — mac).",
             "properties": {
               "hostname": {
                 "type": "string",
                 "minLength": 1,
-                "maxLength": 253
+                "maxLength": 253,
+                "description": "Ixtiyoriy. Berilsa, normallashtirilgan holda assets[].asset_uid ga teng bo'lishi shart (qoida: qo'llanma §2.4.7)."
               },
               "ip": {
                 "type": "string",

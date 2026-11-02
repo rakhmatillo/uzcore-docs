@@ -1246,7 +1246,7 @@ mitre_attacks[]
 
 | Поле | Тип | R/O | Описание |
 |---|---|---|---|
-| `device.hostname` | string | **R** | **Ключ связи с инвентаризацией активов.** В нормализованном виде должен совпадать с `assets[].asset_uid` (правило: §2.4.7). |
+| `device.hostname` | string | **O** | **Ключ связи с инвентаризацией активов.** Необязательно, но **настоятельно рекомендуется**: если указан, в нормализованном виде должен совпадать с `assets[].asset_uid` (правило: §2.4.7). Без него алерт не связывается с активом — резервный путь `device.mac`. |
 | `device.ip` | string | **O** | IP-адрес |
 | `device.mac` | string | **O** | MAC-адрес, **в нижнем регистре**: `00:1a:2b:3c:4d:5e`. Сопоставляется с `technical.mac_addresses[]` актива. |
 
@@ -1977,7 +1977,7 @@ technical.indicators[]
 konvert: telemetry_type · schema_version · org_id · collected_at
 element: class_uid · category_uid · activity_id · type_uid · time · severity_id
 metadata.version · metadata.product.name
-finding_info.uid · device.hostname
+finding_info.uid · device (hostname необязателен, рекомендуется)
 ```
 
 **Asset — минимальный:**
@@ -2038,7 +2038,7 @@ texnik:  technical.exposure · technical.ip_addresses · technical.os · technic
 - [ ] `metadata.version` = `"1.9.0"`
 - [ ] `severity_id` только из `{0,1,2,3,4,5,99}`
 - [ ] `finding_info.title` — название правила, а не текст события
-- [ ] `device.hostname` нормализован и равен `asset_uid`
+- [ ] `device.hostname` (если указан) нормализован и равен `asset_uid`
 - [ ] `device.mac` в нижнем регистре (`00:1a:2b:3c:4d:5e`)
 
 **Asset**

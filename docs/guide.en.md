@@ -1246,7 +1246,7 @@ These four fields are **always the same**. If any other value is sent, the paylo
 
 | Field | Type | R/O | Definition |
 |---|---|---|---|
-| `device.hostname` | string | **R** | **Linking key to the asset inventory.** In normalized form it must equal `assets[].asset_uid` (rule: §2.4.7). |
+| `device.hostname` | string | **O** | **Linking key to the asset inventory.** Optional but **strongly recommended**: when present, in normalized form it must equal `assets[].asset_uid` (rule: §2.4.7). Without it the alert cannot be linked to an asset — fallback is `device.mac`. |
 | `device.ip` | string | **O** | IP address |
 | `device.mac` | string | **O** | MAC address, **in lowercase**: `00:1a:2b:3c:4d:5e`. Compared against `technical.mac_addresses[]` in the asset. |
 
@@ -1977,7 +1977,7 @@ technical.indicators[]
 konvert: telemetry_type · schema_version · org_id · collected_at
 element: class_uid · category_uid · activity_id · type_uid · time · severity_id
 metadata.version · metadata.product.name
-finding_info.uid · device.hostname
+finding_info.uid · device (hostname optional, recommended)
 ```
 
 **Asset — minimal:**
@@ -2038,7 +2038,7 @@ Before launching the integration, check the following:
 - [ ] `metadata.version` = `"1.9.0"`
 - [ ] `severity_id` only from `{0,1,2,3,4,5,99}`
 - [ ] `finding_info.title` is the rule name, not the event text
-- [ ] `device.hostname` is normalized and equal to `asset_uid`
+- [ ] `device.hostname` (when present) is normalized and equal to `asset_uid`
 - [ ] `device.mac` is lowercase (`00:1a:2b:3c:4d:5e`)
 
 **Asset**

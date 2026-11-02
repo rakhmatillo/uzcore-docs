@@ -1246,7 +1246,7 @@ Bu to'rt maydon **har doim bir xil**. Boshqa qiymat yuborilsa payload rad etilad
 
 | Maydon | Tur | R/O | Ta'rif |
 |---|---|---|---|
-| `device.hostname` | string | **R** | **Aktivlar inventarizatsiyasi bilan bog'lovchi kalit.** Normallashtirilgan holda `assets[].asset_uid` ga teng bo'lishi shart (qoida: §2.4.7). |
+| `device.hostname` | string | **O** | **Aktivlar inventarizatsiyasi bilan bog'lovchi kalit.** Ixtiyoriy, lekin **kuchli tavsiya etiladi**: berilsa, normallashtirilgan holda `assets[].asset_uid` ga teng bo'lishi shart (qoida: §2.4.7). Bo'lmasa alert aktivga bog'lanmaydi — zaxira yo'l `device.mac`. |
 | `device.ip` | string | **O** | IP manzil |
 | `device.mac` | string | **O** | MAC manzil, **kichik harfda**: `00:1a:2b:3c:4d:5e`. Aktivdagi `technical.mac_addresses[]` bilan solishtiriladi. |
 
@@ -1977,7 +1977,7 @@ technical.indicators[]
 konvert: telemetry_type · schema_version · org_id · collected_at
 element: class_uid · category_uid · activity_id · type_uid · time · severity_id
 metadata.version · metadata.product.name
-finding_info.uid · device.hostname
+finding_info.uid · device (hostname ixtiyoriy, tavsiya etiladi)
 ```
 
 **Asset — minimal:**
@@ -2038,7 +2038,7 @@ Integratsiyani ishga tushirishdan oldin quyidagilarni tekshiring:
 - [ ] `metadata.version` = `"1.9.0"`
 - [ ] `severity_id` faqat `{0,1,2,3,4,5,99}` dan
 - [ ] `finding_info.title` — qoida nomi, hodisa matni emas
-- [ ] `device.hostname` normallashtirilgan va `asset_uid` ga teng
+- [ ] `device.hostname` (berilgan bo'lsa) normallashtirilgan va `asset_uid` ga teng
 - [ ] `device.mac` kichik harfda (`00:1a:2b:3c:4d:5e`)
 
 **Asset**
