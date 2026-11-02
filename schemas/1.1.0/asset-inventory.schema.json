@@ -1,0 +1,2257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nsoc.uz/schemas/1.0/asset-inventory.schema.json",
+  "title": "NSOC Asset Inventory",
+  "description": "Tashkilot aktivlari. Umumiy yadro + klassga mos bitta obyekt. Registr klasslari (information, process, personnel, site, organization) maydonlari ISO/IEC 27002:2022 va 27005:2022 asosida aniqlangan. Backend UPSERT tamoyilida ishlaydi: yuborilmagan aktiv o'chirilmaydi, faqat last_seen yangilanmaydi. TLP:RED.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "telemetry_type",
+    "schema_version",
+    "org_id",
+    "tlp",
+    "collected_at",
+    "summary",
+    "assets"
+  ],
+  "properties": {
+    "telemetry_type": {
+      "const": "asset_inventory"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "org_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "tlp": {
+      "const": "RED",
+      "description": "Aktivlar uchun har doim RED."
+    },
+    "source_system": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_assets"
+      ],
+      "properties": {
+        "total_assets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "servers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endpoints": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "network_devices": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ot_ics_devices": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "internet_facing": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_of_life": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "maxItems": 50000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_uid",
+          "asset_class",
+          "asset_type"
+        ],
+        "properties": {
+          "asset_uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Barqaror unikal ID. Snapshotlar orasida o'zgarmaydi. personnel klassida ism/login/email YOZILMAYDI - faqat anonim ID."
+          },
+          "asset_class": {
+            "type": "string",
+            "enum": [
+              "information",
+              "process",
+              "hardware",
+              "software",
+              "network",
+              "service",
+              "information_resource",
+              "security_tool",
+              "personnel",
+              "site",
+              "organization",
+              "intangible"
+            ]
+          },
+          "asset_type": {
+            "type": "string",
+            "enum": [
+              "active_network_device",
+              "administrator",
+              "application",
+              "atm",
+              "backup",
+              "backup_storage_room",
+              "business_process",
+              "cloud_service",
+              "comm_channel",
+              "confidential_data",
+              "configuration",
+              "container",
+              "corporate_network",
+              "credential",
+              "cryptographic_key",
+              "customer",
+              "database",
+              "datacenter",
+              "dbms",
+              "dev_tool",
+              "developer",
+              "diagnostic_tool",
+              "dns_service",
+              "edms",
+              "email_system",
+              "employee",
+              "endpoint",
+              "file_storage",
+              "firmware",
+              "identity_service",
+              "industrial_control_system",
+              "industrial_server",
+              "infokiosk",
+              "information_system",
+              "iot_device",
+              "ip_telephony",
+              "log_data",
+              "managed_service",
+              "media_processing_device",
+              "messaging",
+              "mobile",
+              "network_segment",
+              "office_room",
+              "operating_system",
+              "org_unit",
+              "passive_network_equipment",
+              "payment_terminal",
+              "personal_data",
+              "plc",
+              "processed_data",
+              "public_data",
+              "removable_media",
+              "reputation",
+              "responsible_person",
+              "security_appliance",
+              "security_software",
+              "server",
+              "server_room",
+              "source_code",
+              "state_secret",
+              "storage_system",
+              "supplier",
+              "technological_equipment",
+              "telecom_management_system",
+              "transmitted_data",
+              "user",
+              "utility",
+              "video_conferencing",
+              "virtual_machine",
+              "web_resource"
+            ],
+            "description": "asset_class ga mos bo'lishi SHART (Ilova F)."
+          },
+          "criticality": {
+            "type": "string",
+            "enum": [
+              "crown_jewel",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "lifecycle_status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "decommissioned",
+              "end_of_life"
+            ],
+            "description": "Aktivni o'chirishning YAGONA yo'li: decommissioned. Ro'yxatda yo'qligi o'chirish emas."
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "discovered",
+              "declared"
+            ]
+          },
+          "first_seen": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+          },
+          "last_seen": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+            "description": "Eskirganlik qoidasi faqat provenance=discovered aktivlarga qo'llanadi."
+          },
+          "related_asset_uids": {
+            "type": "array",
+            "maxItems": 500,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "description": "Bog'liq aktivlarning asset_uid lari (ilova -> server, ma'lumot -> baza, jarayon -> ilova, mas'ul -> aktivlar)."
+          },
+          "technical": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "exposure"
+            ],
+            "description": "hardware / software / network / service / information_resource / security_tool klasslari uchun umumiy obyekt. Shu olti klassda MAJBURIY, boshqalarida TAQIQLANGAN.",
+            "properties": {
+              "hostname": {
+                "type": "string",
+                "maxLength": 253,
+                "description": "To'liq hostname / FQDN."
+              },
+              "manufacturer": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "model": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "os": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type_id": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      100,
+                      101,
+                      200,
+                      201,
+                      300,
+                      301,
+                      302,
+                      400,
+                      401,
+                      402,
+                      99
+                    ],
+                    "description": "OCSF os.type_id (alert bilan bir xil): 0 Unknown, 100 Windows, 101 Windows Mobile, 200 Linux, 201 Android, 300 macOS, 301 iOS, 302 iPadOS, 400 Solaris, 401 AIX, 402 HP-UX, 99 Other."
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "version": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "build": {
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                }
+              },
+              "ip_addresses": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "value",
+                    "scope"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 45
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "ipv4",
+                        "ipv6"
+                      ]
+                    },
+                    "scope": {
+                      "type": "string",
+                      "enum": [
+                        "internal",
+                        "public",
+                        "dmz"
+                      ]
+                    }
+                  }
+                }
+              },
+              "mac_addresses": {
+                "type": "array",
+                "maxItems": 50,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^([0-9a-f]{2}:){5}[0-9a-f]{2}$"
+                },
+                "description": "MAC manzillar, kichik harfda. Alertdagi device.mac bilan bog'lash uchun zaxira kalit."
+              },
+              "open_ports": {
+                "type": "array",
+                "maxItems": 1000,
+                "uniqueItems": true,
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              },
+              "as_protection_class": {
+                "type": "string",
+                "enum": [
+                  "3B",
+                  "3A",
+                  "2B",
+                  "2A",
+                  "1D",
+                  "1G",
+                  "1V",
+                  "1B",
+                  "1A"
+                ],
+                "description": "Avtomatlashtirilgan tizimning ruxsatsiz foydalanishdan himoyalanganlik sinfi (O'z DSt 2814:2014; O'zMSt 816:2025 7.9.4). Faqat information_system va industrial_control_system turlarida."
+              },
+              "exposure": {
+                "type": "string",
+                "enum": [
+                  "internet_facing",
+                  "dmz",
+                  "internal"
+                ],
+                "description": "Internetga ochiqlik. IP scope dan farq qilishi mumkin (NAT/reverse proxy)."
+              },
+              "environment": {
+                "type": "string",
+                "enum": [
+                  "production",
+                  "staging",
+                  "development",
+                  "test"
+                ]
+              },
+              "software_inventory": {
+                "type": "array",
+                "maxItems": 5000,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "product"
+                  ],
+                  "properties": {
+                    "product": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "version": {
+                      "type": "string",
+                      "maxLength": 100
+                    },
+                    "cpe": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "pattern": "^cpe:2\\.3:[aho\\*\\-]:"
+                    }
+                  }
+                }
+              },
+              "known_cves": {
+                "type": "array",
+                "maxItems": 5000,
+                "description": "Faqat tashkilot biladigan ma'lumot. CVSS va KEV ni NSOC CVE ID orqali o'zi to'ldiradi.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "cve_id"
+                  ],
+                  "properties": {
+                    "cve_id": {
+                      "type": "string",
+                      "pattern": "^CVE-\\d{4}-\\d{4,}$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "unpatched",
+                        "patched",
+                        "mitigated",
+                        "accepted_risk"
+                      ]
+                    },
+                    "detected_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "information": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "information klassi uchun obyekt. Ixtiyoriy; bo'sh obyekt {} ham to'g'ri. Asos: O'zMSt 816:2025 (L ilova - kirish cheklovi, yaxlitlik va mavjudlik toifalari); ISO/IEC 27002:2022 5.33, 5.34, 8.10-8.13, 8.24.",
+            "properties": {
+              "confidentiality_marks": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "SS",
+                    "S",
+                    "DSP",
+                    "KT",
+                    "BT",
+                    "PD",
+                    "KO",
+                    "OD"
+                  ]
+                },
+                "description": "Kirish cheklovi toifalari (O'zMSt 816:2025, L ilova): SS - sir tutilgan, S - maxfiy (davlat sirlari); DSP - xizmatda foydalanish uchun, KT - tijorat siri, BT - bank siri, PD - shaxsga doir ma'lumotlar, KO - tashkilotning konfidensial ma'lumotlari; OD - ochiq ma'lumotlar. Bir nechtasi birga bo'lishi mumkin; OD faqat yolg'iz."
+              },
+              "integrity_category": {
+                "type": "string",
+                "enum": [
+                  "V",
+                  "N",
+                  "-"
+                ],
+                "description": "Yaxlitlik toifasi (O'zMSt 816:2025, L ilova): V - yuqori, N - past, '-' - talab yo'q."
+              },
+              "availability_category": {
+                "type": "string",
+                "enum": [
+                  "B",
+                  "V",
+                  "S",
+                  "N"
+                ],
+                "description": "Mavjudlik toifasi (O'zMSt 816:2025, L ilova): B - to'siqsiz (uzilish <= 1 daqiqa), V - yuqori (<= 1 soat), S - o'rtacha (<= 12 soat), N - past (> 12 soat)."
+              },
+              "data_categories": {
+                "type": "array",
+                "maxItems": 12,
+                "uniqueItems": true,
+                "description": "Ma'lumot toifalari. Bir nechta tanlanishi mumkin.",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "financial",
+                    "health",
+                    "biometric",
+                    "commercial_secret",
+                    "operational",
+                    "technical",
+                    "telemetry",
+                    "other"
+                  ]
+                }
+              },
+              "contains_pii": {
+                "type": "boolean",
+                "description": "Shaxsga doir ma'lumot mavjudmi (ISO 27002 5.34)."
+              },
+              "pii_volume_band": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "under_1k",
+                  "under_100k",
+                  "under_1m",
+                  "over_1m"
+                ],
+                "description": "PII sub'ektlari soni oralig'i. Aniq son YOZILMAYDI - faqat oraliq."
+              },
+              "storage_location": {
+                "type": "string",
+                "enum": [
+                  "on_premise",
+                  "national_cloud",
+                  "foreign_cloud",
+                  "hybrid",
+                  "offline"
+                ],
+                "description": "Saqlash joyi - ma'lumot rezidentligi (ISO 27002 5.23)."
+              },
+              "retention_days": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 36500,
+                "description": "Saqlash muddati, kunlarda (ISO 27002 5.33, 8.10). 0 - muddat belgilanmagan."
+              },
+              "encryption": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Kriptografik himoya holati (ISO 27002 8.24).",
+                "properties": {
+                  "at_rest": {
+                    "type": "boolean"
+                  },
+                  "in_transit": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "masking_applied": {
+                "type": "boolean",
+                "description": "Maskalash/psevdonimlashtirish qo'llanganmi (ISO 27002 8.11)."
+              },
+              "dlp_applied": {
+                "type": "boolean",
+                "description": "Ma'lumot sizib chiqishining oldini olish vositasi qamrab olganmi (ISO 27002 8.12)."
+              },
+              "backup": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Zaxira nusxa holati (ISO 27002 8.13).",
+                "properties": {
+                  "exists": {
+                    "type": "boolean"
+                  },
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "continuous",
+                      "hourly",
+                      "daily",
+                      "weekly",
+                      "monthly",
+                      "none"
+                    ]
+                  },
+                  "offsite": {
+                    "type": "boolean"
+                  },
+                  "last_tested_at": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  }
+                }
+              },
+              "regulatory_scope": {
+                "type": "array",
+                "maxItems": 10,
+                "uniqueItems": true,
+                "description": "Qaysi normativ talablar qo'llanadi (ISO 27002 5.31, 5.34).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "pq_167",
+                    "personal_data_law",
+                    "state_secret",
+                    "banking",
+                    "healthcare",
+                    "pci_dss",
+                    "gdpr",
+                    "other"
+                  ]
+                }
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "contains_pii": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "contains_pii"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "pii_volume_band": {
+                      "const": "none"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "contains": {
+                        "const": "OD"
+                      }
+                    }
+                  },
+                  "required": [
+                    "confidentiality_marks"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "maxItems": 1
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "contains": {
+                        "const": "PD"
+                      }
+                    }
+                  },
+                  "required": [
+                    "confidentiality_marks"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "properties": {
+                      "contains_pii": {
+                        "const": false
+                      }
+                    },
+                    "required": [
+                      "contains_pii"
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "contains_pii": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "contains_pii",
+                    "confidentiality_marks"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "contains": {
+                        "const": "PD"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "process": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "process klassi uchun obyekt. Ixtiyoriy; bo'sh obyekt {} ham to'g'ri. Asos: ISO/IEC 27002:2022 5.29, 5.30, 5.2; ISO/IEC 27005:2022 7.3.2.",
+            "properties": {
+              "process_owner_uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Jarayon egasining asset_uid i - personnel klassidagi anonim ID (ISO 27002 5.2). Ism YOZILMAYDI."
+              },
+              "citizen_facing": {
+                "type": "boolean",
+                "description": "Jarayon uzilishi fuqarolarga bevosita ta'sir qiladimi. Milliy ustuvorlikni belgilaydi."
+              },
+              "availability_category": {
+                "type": "string",
+                "enum": [
+                  "B",
+                  "V",
+                  "S",
+                  "N"
+                ],
+                "description": "Mavjudlik toifasi (O'zMSt 816:2025, L ilova): B - uzilish <= 1 daqiqa, V - <= 1 soat, S - <= 12 soat, N - > 12 soat."
+              },
+              "bia": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Biznesga ta'sir tahlili natijalari (ISO 27002 5.30 - BIA).",
+                "properties": {
+                  "completed": {
+                    "type": "boolean"
+                  },
+                  "last_review_at": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "rto_minutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 525600,
+                    "description": "Recovery Time Objective - tiklanishning maqsadli vaqti, minutlarda."
+                  },
+                  "rpo_minutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 525600,
+                    "description": "Recovery Point Objective - yo'qotilishi mumkin bo'lgan ma'lumot oynasi, minutlarda."
+                  },
+                  "mtpd_minutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 525600,
+                    "description": "Maximum Tolerable Period of Disruption - uzilishning chidab bo'ladigan eng uzun muddati."
+                  }
+                }
+              },
+              "continuity_plan": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Uzluksizlik rejasi holati (ISO 27002 5.29, 5.30).",
+                "properties": {
+                  "exists": {
+                    "type": "boolean"
+                  },
+                  "last_tested_at": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "manual_fallback": {
+                    "type": "boolean",
+                    "description": "AT ishlamaganda qo'lda bajarish imkoniyati bormi."
+                  }
+                }
+              },
+              "impact_if_disrupted": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ],
+                "description": "Uzilishning umumiy oqibati (ISO 27005 7.3.2)."
+              },
+              "regulatory_scope": {
+                "type": "array",
+                "maxItems": 10,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "pq_167",
+                    "personal_data_law",
+                    "state_secret",
+                    "banking",
+                    "healthcare",
+                    "pci_dss",
+                    "gdpr",
+                    "other"
+                  ]
+                }
+              }
+            }
+          },
+          "personnel": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "personnel klassi uchun obyekt. Ixtiyoriy; bo'sh obyekt {} ham to'g'ri. SHAXSIY MA'LUMOT TAQIQLANGAN - ism, login, email, telefon, lavozim matni, tug'ilgan sana yo'q. Asos: ISO/IEC 27002:2022 5.2, 5.3, 6.1-6.7, 8.2.",
+            "properties": {
+              "represents": {
+                "type": "string",
+                "enum": [
+                  "individual",
+                  "role",
+                  "group"
+                ],
+                "description": "Yozuv bitta shaxsni, rolni yoki guruhni ifodalaydimi. Tavsiya: role yoki group - anonimlik shunda kuchliroq."
+              },
+              "headcount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000,
+                "description": "represents=role yoki group bo'lganda shu rol/guruhdagi odamlar soni."
+              },
+              "role_category": {
+                "type": "string",
+                "enum": [
+                  "executive",
+                  "ciso",
+                  "security_officer",
+                  "soc_analyst",
+                  "system_admin",
+                  "network_admin",
+                  "dba",
+                  "developer",
+                  "ot_engineer",
+                  "help_desk",
+                  "auditor",
+                  "general_user",
+                  "other"
+                ],
+                "description": "Rol toifasi (ISO 27002 5.2). Erkin matnli lavozim nomi EMAS."
+              },
+              "employment_type": {
+                "type": "string",
+                "enum": [
+                  "employee",
+                  "contractor",
+                  "third_party",
+                  "intern"
+                ],
+                "description": "Bandlik shakli (ISO 27002 6.2, 5.19)."
+              },
+              "privileged_access": {
+                "type": "boolean",
+                "description": "Imtiyozli kirish huquqi bormi (ISO 27002 8.2)."
+              },
+              "privileged_scope": {
+                "type": "array",
+                "maxItems": 10,
+                "uniqueItems": true,
+                "description": "Imtiyozli huquq qaysi sohalarda (ISO 27002 8.2). Faqat privileged_access=true bo'lganda.",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "domain_admin",
+                    "server_admin",
+                    "database",
+                    "network",
+                    "ot_ics",
+                    "cloud",
+                    "security_tools",
+                    "backup",
+                    "source_code"
+                  ]
+                }
+              },
+              "segregation_of_duties_conflict": {
+                "type": "boolean",
+                "description": "Vazifalarni ajratish buzilgan holat aniqlanganmi (ISO 27002 5.3)."
+              },
+              "screening_completed": {
+                "type": "boolean",
+                "description": "Ishga qabul oldidan tekshiruv o'tkazilganmi (ISO 27002 6.1)."
+              },
+              "nda_signed": {
+                "type": "boolean",
+                "description": "Maxfiylik kelishuvi imzolanganmi (ISO 27002 6.6)."
+              },
+              "security_training": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Xabardorlik va o'qitish holati (ISO 27002 6.3).",
+                "properties": {
+                  "completed": {
+                    "type": "boolean"
+                  },
+                  "last_completed_at": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  }
+                }
+              },
+              "remote_access": {
+                "type": "boolean",
+                "description": "Masofadan ishlash huquqi bormi (ISO 27002 6.7)."
+              },
+              "access_to_confidentiality_marks": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "SS",
+                    "S",
+                    "DSP",
+                    "KT",
+                    "BT",
+                    "PD",
+                    "KO",
+                    "OD"
+                  ]
+                },
+                "description": "Kirish huquqi bo'lgan ma'lumot toifalari (O'zMSt 816:2025, L ilova kodlari)."
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "privileged_access": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "privileged_access"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "privileged_scope"
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "represents": {
+                      "const": "individual"
+                    }
+                  },
+                  "required": [
+                    "represents"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "headcount"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "site": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "site klassi uchun obyekt. Ixtiyoriy; bo'sh obyekt {} ham to'g'ri. ANIQ MANZIL YOZILMAYDI - faqat hudud kodi. Asos: ISO/IEC 27002:2022 7.1-7.5, 7.11, 7.12.",
+            "properties": {
+              "site_type": {
+                "type": "string",
+                "enum": [
+                  "datacenter",
+                  "colocation",
+                  "server_room",
+                  "office",
+                  "branch",
+                  "industrial_plant",
+                  "substation",
+                  "dr_site",
+                  "warehouse",
+                  "remote_facility"
+                ],
+                "description": "Obyekt turi."
+              },
+              "region_code": {
+                "type": "string",
+                "enum": [
+                  "UZ-AN",
+                  "UZ-BU",
+                  "UZ-FA",
+                  "UZ-JI",
+                  "UZ-NG",
+                  "UZ-NW",
+                  "UZ-QA",
+                  "UZ-QR",
+                  "UZ-SA",
+                  "UZ-SI",
+                  "UZ-SU",
+                  "UZ-TK",
+                  "UZ-TO",
+                  "UZ-XO",
+                  "FOREIGN"
+                ],
+                "description": "ISO 3166-2:UZ hudud kodi. Ko'cha manzili, bino raqami va koordinata YOZILMAYDI. FOREIGN - O'zbekistondan tashqarida."
+              },
+              "ownership": {
+                "type": "string",
+                "enum": [
+                  "owned",
+                  "leased",
+                  "colocation",
+                  "third_party"
+                ],
+                "description": "Egalik shakli (ISO 27002 5.19 - tashqi joylashuvda ta'minotchi javobgarligi)."
+              },
+              "secure_area": {
+                "type": "boolean",
+                "description": "Himoyalangan hudud sifatida belgilanganmi (ISO 27002 7.1, 7.3, 7.6)."
+              },
+              "physical_access_control": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "description": "Jismoniy kirish nazorati vositalari (ISO 27002 7.2).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "key",
+                    "badge",
+                    "pin",
+                    "biometric",
+                    "mantrap",
+                    "guard",
+                    "visitor_log"
+                  ]
+                }
+              },
+              "physical_monitoring": {
+                "type": "array",
+                "maxItems": 6,
+                "uniqueItems": true,
+                "description": "Jismoniy kuzatuv vositalari (ISO 27002 7.4).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "cctv",
+                    "intruder_alarm",
+                    "guard_patrol",
+                    "access_log",
+                    "environmental_sensor"
+                  ]
+                }
+              },
+              "supporting_utilities": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "description": "Qo'llab-quvvatlovchi infratuzilma (ISO 27002 7.11).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "ups",
+                    "generator",
+                    "redundant_power",
+                    "cooling",
+                    "fire_suppression",
+                    "water_detection",
+                    "redundant_telecom"
+                  ]
+                }
+              },
+              "environmental_threats": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "description": "Ma'lum tabiiy va atrof-muhit tahdidlari (ISO 27002 7.5).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "seismic",
+                    "flood",
+                    "fire",
+                    "extreme_heat",
+                    "dust",
+                    "power_instability"
+                  ]
+                }
+              },
+              "hosts_critical_assets": {
+                "type": "boolean",
+                "description": "Bu obyektda crown_jewel yoki high darajadagi aktivlar joylashganmi."
+              }
+            }
+          },
+          "organization": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "organization klassi uchun obyekt. Ixtiyoriy; bo'sh obyekt {} ham to'g'ri. Asos: ISO/IEC 27002:2022 5.19-5.23; ISO/IEC 27005:2022 7.2.",
+            "properties": {
+              "org_role": {
+                "type": "string",
+                "enum": [
+                  "supplier",
+                  "ict_supplier",
+                  "cloud_provider",
+                  "mssp",
+                  "subcontractor",
+                  "internal_unit",
+                  "partner",
+                  "regulator"
+                ],
+                "description": "Tashkilotning bu aktiv kontekstidagi roli (ISO 27002 5.19, 5.21, 5.23)."
+              },
+              "org_ref": {
+                "type": "string",
+                "maxLength": 64,
+                "description": "YURIDIK SHAXS ro'yxat kodi (STIR/INN). Jismoniy shaxs yoki yakka tartibdagi tadbirkor kodi YOZILMAYDI. Milliy darajada ta'minot zanjiri kesishmasini aniqlash uchun."
+              },
+              "country_code": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$",
+                "description": "ISO 3166-1 alpha-2 yurisdiksiya kodi (ISO 27002 5.21 - AKT ta'minot zanjiri)."
+              },
+              "access_type": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "description": "Tashkilotga berilgan kirish turlari (ISO 27002 5.19, 5.20).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "physical",
+                    "remote_logical",
+                    "privileged",
+                    "data_processing",
+                    "source_code",
+                    "onsite_staff",
+                    "managed_security"
+                  ]
+                }
+              },
+              "agreement": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Shartnoma qamrovi (ISO 27002 5.20).",
+                "properties": {
+                  "nda": {
+                    "type": "boolean"
+                  },
+                  "security_clauses": {
+                    "type": "boolean"
+                  },
+                  "sla": {
+                    "type": "boolean"
+                  },
+                  "right_to_audit": {
+                    "type": "boolean"
+                  },
+                  "incident_notification": {
+                    "type": "boolean",
+                    "description": "Hodisa haqida xabar berish majburiyati shartnomada bormi."
+                  }
+                }
+              },
+              "security_certification": {
+                "type": "array",
+                "maxItems": 8,
+                "uniqueItems": true,
+                "description": "Tasdiqlangan sertifikatlar (ISO 27002 5.21, 5.22).",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "iso_27001",
+                    "iso_22301",
+                    "pci_dss",
+                    "soc2",
+                    "national_cert",
+                    "other"
+                  ]
+                }
+              },
+              "last_review_at": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "description": "Oxirgi xavfsizlik ko'rigi sanasi (ISO 27002 5.22)."
+              },
+              "concentration_risk": {
+                "type": "boolean",
+                "description": "Bu ta'minotchiga muqobilsiz bog'liqlik bormi (ISO 27005 7.2 - konsentratsiya xavfi)."
+              }
+            }
+          },
+          "intangible": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {},
+            "description": "intangible klassi uchun obyekt. Maydonlari hali aniqlanmagan - hozircha bo'sh obyekt {}."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "information"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "processed_data",
+                    "state_secret",
+                    "confidential_data",
+                    "personal_data",
+                    "public_data",
+                    "transmitted_data",
+                    "source_code",
+                    "configuration",
+                    "backup",
+                    "credential",
+                    "cryptographic_key",
+                    "log_data"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "process"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "business_process"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "hardware"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "endpoint",
+                    "server",
+                    "industrial_server",
+                    "storage_system",
+                    "removable_media",
+                    "mobile",
+                    "atm",
+                    "infokiosk",
+                    "payment_terminal",
+                    "plc",
+                    "technological_equipment",
+                    "iot_device",
+                    "virtual_machine",
+                    "container",
+                    "media_processing_device"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "software"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "operating_system",
+                    "application",
+                    "dbms",
+                    "diagnostic_tool",
+                    "dev_tool",
+                    "utility",
+                    "firmware"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "network"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "corporate_network",
+                    "comm_channel",
+                    "active_network_device",
+                    "network_segment",
+                    "telecom_management_system"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "service"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "email_system",
+                    "video_conferencing",
+                    "ip_telephony",
+                    "messaging",
+                    "edms",
+                    "identity_service",
+                    "dns_service",
+                    "cloud_service",
+                    "managed_service"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "information_resource"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "file_storage",
+                    "web_resource",
+                    "database",
+                    "information_system",
+                    "industrial_control_system"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "security_tool"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "security_appliance",
+                    "security_software"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "personnel"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "employee",
+                    "customer",
+                    "user",
+                    "developer",
+                    "administrator",
+                    "responsible_person"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "site"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "office_room",
+                    "server_room",
+                    "backup_storage_room",
+                    "datacenter",
+                    "passive_network_equipment"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "organization"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "supplier",
+                    "org_unit"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "intangible"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "properties": {
+                "asset_type": {
+                  "enum": [
+                    "reputation"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "information"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "technical"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "process"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "technical"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "hardware"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "required": [
+                "technical"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "software"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "required": [
+                "technical"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "network"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "required": [
+                "technical"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "service"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "required": [
+                "technical"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "information_resource"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "required": [
+                "technical"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "security_tool"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "required": [
+                "technical"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "personnel"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "technical"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "site"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "technical"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "organization"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "technical"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "intangible"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_class": {
+                  "const": "intangible"
+                }
+              },
+              "required": [
+                "asset_class"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "technical"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "information"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "process"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "personnel"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "site"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "organization"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "not": {
+                "properties": {
+                  "asset_type": {
+                    "enum": [
+                      "information_system",
+                      "industrial_control_system"
+                    ]
+                  }
+                },
+                "required": [
+                  "asset_type"
+                ]
+              }
+            },
+            "then": {
+              "properties": {
+                "technical": {
+                  "not": {
+                    "required": [
+                      "as_protection_class"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_type": {
+                  "const": "state_secret"
+                }
+              },
+              "required": [
+                "asset_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "information": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "contains": {
+                        "enum": [
+                          "SS",
+                          "S"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_type": {
+                  "const": "personal_data"
+                }
+              },
+              "required": [
+                "asset_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "information": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "contains": {
+                        "const": "PD"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_type": {
+                  "const": "confidential_data"
+                }
+              },
+              "required": [
+                "asset_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "information": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "contains": {
+                        "enum": [
+                          "DSP",
+                          "KT",
+                          "BT",
+                          "PD",
+                          "KO"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "asset_type": {
+                  "const": "public_data"
+                }
+              },
+              "required": [
+                "asset_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "information": {
+                  "properties": {
+                    "confidentiality_marks": {
+                      "const": [
+                        "OD"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
